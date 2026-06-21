@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>✨ 趣味心理测试</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap');
+  
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  body {
+    font-family: 'Noto Sans SC', sans-serif;
+    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+  
+  .container {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    padding: 40px;
+    max-width: 700px;
+    width: 100%;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+  }
+  
+  .header {
+    text-align: center;
+    margin-bottom: 35px;
+  }
+  
+  .header .icon { font-size: 48px; margin-bottom: 10px; }
+  .header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 6px;
+  }
+  .header p {
+    color: rgba(255,255,255,0.5);
+    font-size: 14px;
+  }
+  
+  .progress-bar {
+    width: 100%;
+    height: 6px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 3px;
+    margin-bottom: 30px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #f093fb, #f5576c);
+    border-radius: 3px;
+    transition: width 0.5s ease;
+  }
+  
+  .progress-text {
+    text-align: center;
+    color: rgba(255,255,255,0.4);
+    font-size: 13px;
+    margin-bottom: 25px;
+  }
+  
+  .question {
+    display: none;
+    animation: fadeIn 0.5s ease;
+  }
+  .question.active { display: block; }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .question h2 {
+    color: #fff;
+    font-size: 20px;
+    font-weight: 500;
+    margin-bottom: 25px;
+    line-height: 1.6;
+  }
+  
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .option {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 14px;
+    padding: 16px 20px;
+    color: rgba(255,255,255,0.8);
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: left;
+    font-family: inherit;
+  }
+  .option:hover {
+    background: rgba(255,255,255,0.12);
+    border-color: rgba(255,255,255,0.25);
+    transform: translateX(4px);
+  }
+  .option:active {
+    transform: scale(0.98);
+  }
+  
+  /* ===== RESULT PAGE ===== */
+  .result {
+    display: none;
+    text-align: center;
+    animation: fadeIn 0.8s ease;
+  }
+  .result.show { display: block; }
+  
+  .result .big-icon { font-size: 72px; margin-bottom: 15px; }
+  .result h2 {
+    color: #fff;
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .result .subtitle {
+    color: rgba(255,255,255,0.5);
+    font-size: 15px;
+    margin-bottom: 30px;
+  }
+  
+  .result-card {
+    background: linear-gradient(135deg, rgba(240,147,251,0.15), rgba(245,87,108,0.15));
+    border: 1px solid rgba(240,147,251,0.3);
+    border-radius: 20px;
+    padding: 40px 30px;
+    margin-bottom: 25px;
+  }
+  .result-card .message {
+    font-size: 32px;
+    font-weight: 900;
+    background: linear-gradient(135deg, #f093fb, #f5576c);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.4;
+  }
+  .result-card .sub-message {
+    color: rgba(255,255,255,0.6);
+    font-size: 16px;
+    margin-top: 15px;
+  }
+  
+  .result .badges {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+  }
+  .result .badge {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 8px 18px;
+    color: rgba(255,255,255,0.7);
+    font-size: 13px;
+  }
+  
+  .result .restart-btn {
+    margin-top: 25px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 12px;
+    padding: 12px 30px;
+    color: rgba(255,255,255,0.6);
+    font-size: 14px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.3s ease;
+  }
+  .result .restart-btn:hover {
+    background: rgba(255,255,255,0.15);
+  }
+  
+  .confetti-container {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 999;
+  }
+  .confetti {
+    position: absolute;
+    width: 10px; height: 10px;
+    opacity: 0;
+    animation: confettiFall 3s ease-in forwards;
+  }
+  @keyframes confettiFall {
+    0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <div class="icon">🧠</div>
+    <h1>趣味心理测试</h1>
+    <p>16道题 · 发现你的隐藏人格</p>
+  </div>
+  
+  <div class="progress-bar">
+    <div class="progress-fill" id="progressFill"></div>
+  </div>
+  <div class="progress-text" id="progressText">第 1 / 16 题</div>
+  
+  <div id="questionsContainer"></div>
+  
+  <div class="result" id="resultContainer">
+    <div class="big-icon">🌈</div>
+    <h2>🎉 测试完成！</h2>
+    <p class="subtitle">经过16道题的综合分析，我们得出了你的专属结果</p>
+    <div class="result-card">
+      <div class="message">💝 唐佳香小宝宝天天开心 💝</div>
+      <div class="sub-message">你就是世界上最独一无二的小可爱！</div>
+    </div>
+    <div class="badges">
+      <span class="badge">✨ 开心指数 100%</span>
+      <span class="badge">🌟 可爱指数 MAX</span>
+      <span class="badge">💫 幸运值 ∞</span>
+    </div>
+    <button class="restart-btn" onclick="restartTest()">🔄 再测一次</button>
+  </div>
+</div>
+
+<div class="confetti-container" id="confettiContainer"></div>
+
+<script>
+// ====== 16道伪测试题 ======
+const questions = [
+  { q: "早晨醒来，你第一件事是？", o: ["伸个懒腰 ☀️", "继续赖床 🛌", "看手机 📱", "喝水 💧"] },
+  { q: "你更喜欢哪种天气？", o: ["晴天 ☀️", "雨天 🌧️", "阴天 ☁️", "下雪 ❄️"] },
+  { q: "周末你最想做什么？", o: ["出去嗨 🎉", "宅家躺 🛋️", "约朋友 🫂", "去运动 🏃"] },
+  { q: "你最喜欢的颜色是？", o: ["粉色 💗", "蓝色 💙", "紫色 💜", "白色 🤍"] },
+  { q: "你觉得自己是什么类型的？", o: ["可爱型 🐰", "酷酷型 😎", "温柔型 🥰", "活泼型 🦋"] },
+  { q: "旅行首选去哪里？", o: ["海边 🌊", "山里 🏔️", "城市 🏙️", "乡村 🌾"] },
+  { q: "你更喜欢哪种动物？", o: ["猫咪 🐱", "狗狗 🐶", "小兔 🐰", "熊猫 🐼"] },
+  { q: "你的幸运数字是？", o: ["7 ✨", "3 ✨", "8 ✨", "6 ✨"] },
+  { q: "你最喜欢哪种甜品？", o: ["蛋糕 🎂", "冰淇淋 🍦", "奶茶 🧋", "糖果 🍬"] },
+  { q: "你觉得自己是什么星座气质？", o: ["火象 🔥", "土象 🌍", "风象 💨", "水象 💧"] },
+  { q: "你更喜欢白天还是夜晚？", o: ["白天 ☀️", "夜晚 🌙", "黄昏 🌅", "都一样 🤷"] },
+  { q: "朋友会用哪个词形容你？", o: ["靠谱 👍", "有趣 😂", "暖心 💕", "靠谱 ✨"] },
+  { q: "你最喜欢哪种花？", o: ["玫瑰 🌹", "向日葵 🌻", "樱花 🌸", "百合 🌷"] },
+  { q: "你更擅长什么？", o: ["表达 💬", "倾听 👂", "动手 🛠️", "思考 🤔"] },
+  { q: "你理想中的生活是？", o: ["自由自在 🦅", "温馨安稳 🏡", "精彩刺激 🎢", "简单快乐 😊"] },
+  { q: "你觉得自己最大的优点是？", o: ["善良 💖", "乐观 🌈", "真诚 🤗", "勇敢 🦁"] }
+];
+
+let currentQ = 0;
+
+function renderQuestion(index) {
+  const container = document.getElementById('questionsContainer');
+  const q = questions[index];
+  
+  const div = document.createElement('div');
+  div.className = 'question' + (index === currentQ ? ' active' : '');
+  div.id = 'q' + index;
+  
+  const h2 = document.createElement('h2');
+  h2.textContent = (index + 1) + '. ' + q.q;
+  div.appendChild(h2);
+  
+  const opts = document.createElement('div');
+  opts.className = 'options';
+  
+  q.o.forEach(text => {
+    const btn = document.createElement('button');
+    btn.className = 'option';
+    btn.textContent = text;
+    btn.onclick = () => nextQuestion();
+    opts.appendChild(btn);
+  });
+  
+  div.appendChild(opts);
+  container.appendChild(div);
+}
+
+function nextQuestion() {
+  if (currentQ < 15) {
+    document.getElementById('q' + currentQ).classList.remove('active');
+    currentQ++;
+    document.getElementById('q' + currentQ).classList.add('active');
+    updateProgress();
+  } else {
+    showResult();
+  }
+}
+
+function updateProgress() {
+  const pct = ((currentQ) / 16) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressText').textContent = '第 ' + (currentQ + 1) + ' / 16 题';
+}
+
+function showResult() {
+  document.getElementById('questionsContainer').style.display = 'none';
+  document.getElementById('progressFill').style.width = '100%';
+  document.getElementById('progressText').textContent = '✨ 分析完成！';
+  
+  const result = document.getElementById('resultContainer');
+  result.classList.add('show');
+  
+  // confetti!
+  launchConfetti();
+}
+
+function launchConfetti() {
+  const container = document.getElementById('confettiContainer');
+  const colors = ['#f093fb', '#f5576c', '#ffd93d', '#6bcb77', '#4d96ff', '#ff6b6b', '#a66cff', '#ff9f43'];
+  for (let i = 0; i < 80; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti';
+    el.style.left = Math.random() * 100 + '%';
+    el.style.top = '-10px';
+    el.style.width = (Math.random() * 8 + 4) + 'px';
+    el.style.height = (Math.random() * 8 + 4) + 'px';
+    el.style.background = colors[Math.floor(Math.random() * colors.length)];
+    el.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+    el.style.animationDuration = (Math.random() * 2 + 2) + 's';
+    el.style.animationDelay = (Math.random() * 1.5) + 's';
+    container.appendChild(el);
+  }
+  setTimeout(() => container.innerHTML = '', 5000);
+}
+
+function restartTest() {
+  currentQ = 0;
+  document.getElementById('questionsContainer').style.display = 'block';
+  document.getElementById('questionsContainer').innerHTML = '';
+  document.getElementById('resultContainer').classList.remove('show');
+  for (let i = 0; i < 16; i++) renderQuestion(i);
+  updateProgress();
+}
+
+// Init
+for (let i = 0; i < 16; i++) renderQuestion(i);
+updateProgress();
+</script>
+</body>
+</html>
