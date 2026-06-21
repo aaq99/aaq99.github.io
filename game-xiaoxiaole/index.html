@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>🤡 消消乐</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 16px;
+  overflow: hidden;
+}
+.game-container {
+  background: rgba(255,255,255,0.12);
+  backdrop-filter: blur(20px);
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  max-width: 420px;
+  width: 100%;
+  border: 1px solid rgba(255,255,255,0.2);
+  position: relative;
+}
+.header {
+  text-align: center;
+  margin-bottom: 12px;
+}
+.header h1 {
+  font-size: 28px;
+  color: #fff;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  letter-spacing: 2px;
+}
+.header p {
+  color: rgba(255,255,255,0.6);
+  font-size: 12px;
+  margin-top: 2px;
+}
+/* Score Bar */
+.score-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding: 8px 16px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 12px;
+}
+.score-bar .left {
+  color: rgba(255,255,255,0.8);
+  font-size: 14px;
+}
+.score-bar .right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.score-bar .score-num {
+  font-size: 24px;
+  font-weight: 800;
+  color: #f1c40f;
+}
+.score-bar .goal-badge {
+  background: rgba(241,196,15,0.2);
+  color: #f1c40f;
+  font-size: 12px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  border: 1px solid rgba(241,196,15,0.3);
+}
+
+/* ⭐ 有惊喜 - 大号提示 */
+.surprise-hint {
+  text-align: center;
+  margin-bottom: 10px;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.surprise-hint .hint-text {
+  font-size: 18px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.3);
+  letter-spacing: 4px;
+  transition: all 0.3s;
+}
+.surprise-hint .hint-text.active {
+  font-size: 32px;
+  color: #f1c40f;
+  text-shadow: 0 0 20px rgba(241,196,15,0.5), 0 0 40px rgba(241,196,15,0.3);
+  animation: pulse-glow 0.8s ease infinite alternate;
+}
+@keyframes pulse-glow {
+  0% { transform: scale(1); text-shadow: 0 0 20px rgba(241,196,15,0.3); }
+  100% { transform: scale(1.05); text-shadow: 0 0 30px rgba(241,196,15,0.6), 0 0 60px rgba(241,196,15,0.3); }
+}
+
+/* Grid */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.cell {
+  aspect-ratio: 1;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  background: rgba(255,255,255,0.15);
+  border: 2px solid rgba(255,255,255,0.08);
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.cell:active {
+  transform: scale(0.9);
+}
+.cell.selected {
+  border: 3px solid #f1c40f;
+  box-shadow: 0 0 20px rgba(241,196,15,0.5);
+  transform: scale(1.05);
+}
+.btn-reset {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.2);
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 600;
+  letter-spacing: 2px;
+}
+.btn-reset:hover {
+  background: rgba(255,255,255,0.3);
+}
+.btn-reset:active {
+  transform: scale(0.97);
+}
+/* Progress bar */
+.progress-wrap {
+  width: 100%;
+  height: 6px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 10px;
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #f1c40f, #e74c3c);
+  border-radius: 10px;
+  transition: width 0.3s ease;
+}
+
+/* 🎊 Modal */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.75);
+  backdrop-filter: blur(10px);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+}
+.modal-overlay.show {
+  display: flex;
+}
+.modal-box {
+  background: #fff;
+  border-radius: 28px;
+  padding: 44px 36px 36px;
+  max-width: 360px;
+  width: 90%;
+  text-align: center;
+  animation: modalIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+  position: relative;
+  overflow: hidden;
+}
+.modal-box::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(transparent, rgba(231,76,60,0.05), transparent, rgba(241,196,15,0.05), transparent);
+  animation: spin 4s linear infinite;
+  pointer-events: none;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+@keyframes modalIn {
+  0% { transform: scale(0.3) rotate(-15deg); opacity: 0; }
+  100% { transform: scale(1) rotate(0); opacity: 1; }
+}
+.modal-box .emoji-big {
+  font-size: 72px;
+  margin-bottom: 8px;
+  animation: bounce 0.6s ease infinite alternate;
+  position: relative;
+  z-index: 1;
+}
+@keyframes bounce {
+  0% { transform: translateY(0) scale(1); }
+  100% { transform: translateY(-15px) scale(1.1); }
+}
+.modal-box h2 {
+  font-size: 36px;
+  color: #e74c3c;
+  margin-bottom: 4px;
+  font-weight: 900;
+  position: relative;
+  z-index: 1;
+  text-shadow: 2px 2px 0 rgba(231,76,60,0.15);
+}
+.modal-box .pig-emoji {
+  font-size: 48px;
+  display: block;
+  margin-bottom: 10px;
+  position: relative;
+  z-index: 1;
+}
+.modal-box .sub-text {
+  font-size: 14px;
+  color: #999;
+  margin-bottom: 20px;
+  position: relative;
+  z-index: 1;
+}
+.modal-box .btn-ok {
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+  color: #fff;
+  border: none;
+  padding: 12px 48px;
+  border-radius: 50px;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 2px;
+  position: relative;
+  z-index: 1;
+}
+.modal-box .btn-ok:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 25px rgba(231,76,60,0.4);
+}
+.modal-box .btn-ok:active {
+  transform: scale(0.95);
+}
+
+/* Confetti */
+.confetti-container {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  z-index: 999;
+  overflow: hidden;
+}
+.confetti-piece {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  top: -20px;
+  animation: confettiFall linear forwards;
+}
+@keyframes confettiFall {
+  0% { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
+  100% { transform: translateY(105vh) rotate(1080deg) scale(0.5); opacity: 0; }
+}
+.footer-text {
+  text-align: center;
+  color: rgba(255,255,255,0.25);
+  font-size: 11px;
+  margin-top: 10px;
+  letter-spacing: 1px;
+}
+@media (max-width: 400px) {
+  .cell { font-size: 22px; border-radius: 8px; }
+  .game-container { padding: 16px; }
+  .header h1 { font-size: 22px; }
+  .surprise-hint .hint-text.active { font-size: 26px; }
+}
+</style>
+</head>
+<body>
+
+<div class="game-container">
+  <div class="header">
+    <h1>🍬 消消乐</h1>
+    <p>点击相邻水果交换，三个以上消除</p>
+  </div>
+
+  <div class="score-bar">
+    <span class="left">🏆 得分</span>
+    <div class="right">
+      <span class="score-num" id="scoreDisplay">0</span>
+      <span class="goal-badge">/20</span>
+    </div>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <!-- ⭐ 大号 "有惊喜" -->
+  <div class="surprise-hint">
+    <div class="hint-text" id="surpriseHint">✨ 有惊喜 ✨</div>
+  </div>
+
+  <div class="grid" id="grid"></div>
+  <button class="btn-reset" id="resetBtn">🔄 重新洗牌</button>
+  <div class="footer-text">消除到 20 分揭晓 🎁</div>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modal">
+  <div class="modal-box">
+    <div class="emoji-big">🐷</div>
+    <h2>你被耍了</h2>
+    <span class="pig-emoji">🐽 你个小猪 🐽</span>
+    <p class="sub-text">辛辛苦苦消到 20 分，就这？哈哈哈哈 😂</p>
+    <button class="btn-ok" id="modalBtn">🙄 不服再来</button>
+  </div>
+</div>
+
+<div class="confetti-container" id="confettiContainer"></div>
+
+<script>
+const EMOJIS = ['🍎','🍊','🍋','🍇','🍓','🍒'];
+const ROWS = 6;
+const COLS = 6;
+const GOAL = 20;
+let grid = [];
+let score = 0;
+let selected = null;
+let isProcessing = false;
+let surpriseTriggered = false;
+
+function initGrid() {
+  grid = [];
+  for (let r = 0; r < ROWS; r++) {
+    grid[r] = [];
+    for (let c = 0; c < COLS; c++) {
+      let emoji;
+      do {
+        emoji = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
+      } while (
+        (r >= 2 && grid[r-1][c] === emoji && grid[r-2][c] === emoji) ||
+        (c >= 2 && grid[r][c-1] === emoji && grid[r][c-2] === emoji)
+      );
+      grid[r][c] = emoji;
+    }
+  }
+}
+
+function updateUI() {
+  document.getElementById('scoreDisplay').textContent = score;
+  const pct = Math.min(100, (score / GOAL) * 100);
+  document.getElementById('progressBar').style.width = pct + '%';
+
+  const hint = document.getElementById('surpriseHint');
+  if (score >= GOAL) {
+    hint.textContent = '🎊 有惊喜 🎊';
+    hint.classList.add('active');
+  } else {
+    hint.textContent = `✨ 有惊喜 ✨  (${score}/${GOAL})`;
+    hint.classList.remove('active');
+  }
+}
+
+function render() {
+  const el = document.getElementById('grid');
+  el.innerHTML = '';
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      cell.dataset.r = r;
+      cell.dataset.c = c;
+      cell.textContent = grid[r][c] || '⬜';
+      if (grid[r][c] === null) cell.style.opacity = '0.3';
+      if (selected && selected.r === r && selected.c === c) cell.classList.add('selected');
+      cell.addEventListener('click', () => handleClick(r, c));
+      el.appendChild(cell);
+    }
+  }
+  updateUI();
+}
+
+function handleClick(r, c) {
+  if (isProcessing || grid[r][c] === null) return;
+
+  if (!selected) {
+    selected = { r, c };
+    render();
+    return;
+  }
+
+  const dr = Math.abs(r - selected.r);
+  const dc = Math.abs(c - selected.c);
+
+  if ((dr === 1 && dc === 0) || (dr === 0 && dc === 1)) {
+    isProcessing = true;
+    swap(selected.r, selected.c, r, c);
+    selected = null;
+    setTimeout(() => { processMatches(); }, 200);
+  } else {
+    selected = { r, c };
+    render();
+  }
+}
+
+function swap(r1, c1, r2, c2) {
+  const temp = grid[r1][c1];
+  grid[r1][c1] = grid[r2][c2];
+  grid[r2][c2] = temp;
+  render();
+}
+
+function findAllMatches() {
+  const matched = new Set();
+  for (let r = 0; r < ROWS; r++) {
+    let c = 0;
+    while (c < COLS) {
+      if (grid[r][c] === null) { c++; continue; }
+      let end = c + 1;
+      while (end < COLS && grid[r][end] === grid[r][c]) end++;
+      if (end - c >= 3) {
+        for (let i = c; i < end; i++) matched.add(r + ',' + i);
+      }
+      c = end;
+    }
+  }
+  for (let c = 0; c < COLS; c++) {
+    let r = 0;
+    while (r < ROWS) {
+      if (grid[r][c] === null) { r++; continue; }
+      let end = r + 1;
+      while (end < ROWS && grid[end][c] === grid[r][c]) end++;
+      if (end - r >= 3) {
+        for (let i = r; i < end; i++) matched.add(i + ',' + c);
+      }
+      r = end;
+    }
+  }
+  return Array.from(matched).map(s => {
+    const [r, c] = s.split(',').map(Number);
+    return [r, c];
+  });
+}
+
+function dropAndFill() {
+  for (let c = 0; c < COLS; c++) {
+    let items = [];
+    for (let r = ROWS - 1; r >= 0; r--) {
+      if (grid[r][c] !== null) items.push(grid[r][c]);
+    }
+    for (let r = ROWS - 1; r >= 0; r--) {
+      if (items.length > 0) {
+        grid[r][c] = items.shift();
+      } else {
+        grid[r][c] = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
+      }
+    }
+  }
+  render();
+}
+
+function launchConfetti() {
+  const container = document.getElementById('confettiContainer');
+  container.innerHTML = '';
+  const colors = ['#e74c3c','#f1c40f','#2ecc71','#3498db','#9b59b6','#e67e22','#1abc9c','#ff6b6b','#ffd93d','#6bcb77'];
+  for (let i = 0; i < 120; i++) {
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    piece.style.left = Math.random() * 100 + '%';
+    piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+    piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+    piece.style.width = (Math.random() * 8 + 6) + 'px';
+    piece.style.height = (Math.random() * 8 + 6) + 'px';
+    piece.style.animationDuration = (Math.random() * 2 + 2) + 's';
+    piece.style.animationDelay = (Math.random() * 1) + 's';
+    container.appendChild(piece);
+  }
+  setTimeout(() => { container.innerHTML = ''; }, 5000);
+}
+
+function showSurprise() {
+  surpriseTriggered = true;
+  launchConfetti();
+  setTimeout(() => {
+    document.getElementById('modal').classList.add('show');
+  }, 600);
+}
+
+function processMatches() {
+  let matches = findAllMatches();
+  if (matches.length === 0) {
+    isProcessing = false;
+    render();
+    return;
+  }
+
+  for (const [r, c] of matches) {
+    grid[r][c] = null;
+  }
+
+  // 每次消除 +1 分
+  score += matches.length > 0 ? 1 : 0;
+  document.getElementById('scoreDisplay').textContent = score;
+  render();
+
+  setTimeout(() => {
+    dropAndFill();
+    setTimeout(() => {
+      const more = findAllMatches();
+      if (more.length > 0) {
+        processMatches();
+      } else {
+        isProcessing = false;
+        render();
+
+        // 🎯 达到 20 分触发惊喜！
+        if (score >= GOAL && !surpriseTriggered) {
+          showSurprise();
+        }
+      }
+    }, 300);
+  }, 300);
+}
+
+// Modal button
+document.getElementById('modalBtn').addEventListener('click', () => {
+  document.getElementById('modal').classList.remove('show');
+  document.getElementById('confettiContainer').innerHTML = '';
+  resetGame();
+});
+
+// Reset button
+document.getElementById('resetBtn').addEventListener('click', resetGame);
+
+function resetGame() {
+  score = 0;
+  surpriseTriggered = false;
+  selected = null;
+  isProcessing = false;
+  initGrid();
+  render();
+}
+
+// Start
+initGrid();
+render();
+</script>
+</body>
+</html>
