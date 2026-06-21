@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>青花瓷 - 中国传统文化的瑰宝</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: '华文楷体', 'KaiTi', 'STKaiti', 'SimSun', 'PingFang SC', serif;
+            background: #1a1a2e;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* 幻灯片容器 */
+        .slides-wrapper {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 60px 80px;
+            opacity: 0;
+            transition: opacity 0.6s ease;
+            pointer-events: none;
+        }
+
+        .slide.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* 背景装饰 */
+        .slide::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: radial-gradient(ellipse at center, rgba(255,255,255,0.05) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        /* 各页背景 */
+        .slide-bg-1 { background: linear-gradient(135deg, #0c0c1d 0%, #1a1a3e 30%, #2d1b4e 70%, #1a1a2e 100%); }
+        .slide-bg-2 { background: linear-gradient(135deg, #0a1628 0%, #1a2a4a 40%, #0f1f3a 100%); }
+        .slide-bg-3 { background: linear-gradient(135deg, #1a1a2e 0%, #2d1b4e 50%, #1a1a2e 100%); }
+        .slide-bg-4 { background: linear-gradient(135deg, #0c1a2e 0%, #1a3a5a 50%, #0c1a2e 100%); }
+        .slide-bg-5 { background: linear-gradient(135deg, #1a1a2e 0%, #2a1a3e 50%, #1a1a2e 100%); }
+        .slide-bg-6 { background: linear-gradient(135deg, #0a1628 0%, #1a2a4a 40%, #2d1b4e 100%); }
+        .slide-bg-7 { background: linear-gradient(135deg, #1a1a2e 0%, #0f1f3a 50%, #1a1a2e 100%); }
+
+        /* 青花瓷装饰纹样 */
+        .pattern-top {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 8px;
+            background: repeating-linear-gradient(
+                90deg,
+                #4a7db5 0px, #4a7db5 20px,
+                transparent 20px, transparent 24px,
+                #4a7db5 24px, #4a7db5 44px,
+                transparent 44px, transparent 48px
+            );
+            opacity: 0.6;
+        }
+
+        .pattern-bottom {
+            position: absolute;
+            bottom: 0; left: 0;
+            width: 100%; height: 8px;
+            background: repeating-linear-gradient(
+                90deg,
+                #4a7db5 0px, #4a7db5 20px,
+                transparent 20px, transparent 24px,
+                #4a7db5 24px, #4a7db5 44px,
+                transparent 44px, transparent 48px
+            );
+            opacity: 0.6;
+        }
+
+        /* 装饰边框 */
+        .deco-border {
+            position: absolute;
+            top: 20px; left: 20px;
+            right: 20px; bottom: 20px;
+            border: 1px solid rgba(74, 125, 181, 0.2);
+            border-radius: 4px;
+            pointer-events: none;
+        }
+
+        .deco-border::before {
+            content: '';
+            position: absolute;
+            top: 10px; left: 10px;
+            right: 10px; bottom: 10px;
+            border: 1px solid rgba(74, 125, 181, 0.1);
+            border-radius: 2px;
+        }
+
+        /* 标题页 */
+        .title-main {
+            font-size: 64px;
+            color: #e8d5b7;
+            text-shadow: 0 0 40px rgba(74, 125, 181, 0.3);
+            letter-spacing: 12px;
+            margin-bottom: 16px;
+            font-weight: bold;
+        }
+
+        .title-sub {
+            font-size: 24px;
+            color: #8ab4d6;
+            letter-spacing: 8px;
+            margin-bottom: 40px;
+            font-weight: normal;
+        }
+
+        .title-line {
+            width: 200px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #4a7db5, transparent);
+            margin-bottom: 40px;
+        }
+
+        .title-date {
+            font-size: 16px;
+            color: #6a8aaa;
+            letter-spacing: 4px;
+        }
+
+        /* 内容页 */
+        .slide-number {
+            position: absolute;
+            bottom: 30px;
+            right: 40px;
+            font-size: 14px;
+            color: rgba(74, 125, 181, 0.5);
+            letter-spacing: 2px;
+        }
+
+        .content-title {
+            font-size: 42px;
+            color: #e8d5b7;
+            letter-spacing: 6px;
+            margin-bottom: 40px;
+            text-shadow: 0 0 20px rgba(74, 125, 181, 0.2);
+            position: relative;
+            z-index: 1;
+        }
+
+        .content-title::after {
+            content: '';
+            display: block;
+            width: 80px;
+            height: 2px;
+            background: linear-gradient(90deg, #4a7db5, transparent);
+            margin-top: 12px;
+        }
+
+        .content-body {
+            font-size: 22px;
+            color: #c8d8e8;
+            line-height: 2;
+            max-width: 900px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .content-body.left {
+            text-align: left;
+            max-width: 1000px;
+        }
+
+        .content-body li {
+            list-style: none;
+            margin-bottom: 16px;
+            padding-left: 28px;
+            position: relative;
+        }
+
+        .content-body li::before {
+            content: '❋';
+            position: absolute;
+            left: 0;
+            color: #4a7db5;
+            font-size: 18px;
+        }
+
+        /* 两栏布局 */
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            max-width: 1100px;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+        }
+
+        .col-item {
+            text-align: center;
+        }
+
+        .col-icon {
+            font-size: 56px;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .col-title {
+            font-size: 24px;
+            color: #e8d5b7;
+            margin-bottom: 12px;
+            letter-spacing: 2px;
+        }
+
+        .col-desc {
+            font-size: 17px;
+            color: #a8b8c8;
+            line-height: 1.8;
+        }
+
+        /* 时间线 */
+        .timeline {
+            position: relative;
+            max-width: 900px;
+            width: 100%;
+            z-index: 1;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(180deg, transparent, #4a7db5, transparent);
+            transform: translateX(-50%);
+        }
+
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 28px;
+            position: relative;
+        }
+
+        .timeline-item:nth-child(odd) {
+            flex-direction: row;
+        }
+
+        .timeline-item:nth-child(even) {
+            flex-direction: row-reverse;
+        }
+
+        .timeline-year {
+            width: 120px;
+            text-align: center;
+            font-size: 20px;
+            color: #4a7db5;
+            font-weight: bold;
+            letter-spacing: 2px;
+            flex-shrink: 0;
+        }
+
+        .timeline-dot {
+            width: 14px;
+            height: 14px;
+            background: #4a7db5;
+            border-radius: 50%;
+            margin: 0 30px;
+            flex-shrink: 0;
+            box-shadow: 0 0 20px rgba(74, 125, 181, 0.5);
+        }
+
+        .timeline-text {
+            flex: 1;
+            font-size: 17px;
+            color: #b8c8d8;
+            line-height: 1.6;
+            padding: 12px 20px;
+            background: rgba(74, 125, 181, 0.08);
+            border-radius: 8px;
+            border: 1px solid rgba(74, 125, 181, 0.15);
+        }
+
+        /* 装饰瓷器 */
+        .vase-deco {
+            position: absolute;
+            right: 60px;
+            bottom: 60px;
+            font-size: 160px;
+            opacity: 0.06;
+            pointer-events: none;
+            transform: rotate(5deg);
+        }
+
+        .vase-deco-2 {
+            position: absolute;
+            left: 60px;
+            bottom: 40px;
+            font-size: 100px;
+            opacity: 0.04;
+            pointer-events: none;
+            transform: rotate(-8deg);
+        }
+
+        /* 导航 */
+        .nav-bar {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            z-index: 100;
+            background: rgba(26, 26, 46, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 12px 24px;
+            border-radius: 50px;
+            border: 1px solid rgba(74, 125, 181, 0.2);
+        }
+
+        .nav-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 1px solid rgba(74, 125, 181, 0.3);
+            background: transparent;
+            color: #8ab4d6;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-btn:hover {
+            background: rgba(74, 125, 181, 0.2);
+            border-color: #4a7db5;
+        }
+
+        .nav-dots {
+            display: flex;
+            gap: 8px;
+        }
+
+        .nav-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(74, 125, 181, 0.3);
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+        }
+
+        .nav-dot.active {
+            background: #4a7db5;
+            box-shadow: 0 0 12px rgba(74, 125, 181, 0.5);
+            width: 28px;
+            border-radius: 5px;
+        }
+
+        .page-indicator {
+            font-size: 13px;
+            color: rgba(74, 125, 181, 0.6);
+            letter-spacing: 1px;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        /* 引诗 */
+        .poem {
+            font-size: 28px;
+            color: #d4c4a8;
+            font-style: italic;
+            line-height: 2.2;
+            text-align: center;
+            letter-spacing: 4px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .poem-author {
+            font-size: 18px;
+            color: #6a8aaa;
+            margin-top: 20px;
+            letter-spacing: 2px;
+        }
+
+        /* 最后页 */
+        .ending-text {
+            font-size: 36px;
+            color: #e8d5b7;
+            letter-spacing: 8px;
+            text-align: center;
+            line-height: 2;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .slide { padding: 30px 24px; }
+            .title-main { font-size: 36px; letter-spacing: 6px; }
+            .title-sub { font-size: 18px; letter-spacing: 4px; }
+            .content-title { font-size: 28px; }
+            .content-body { font-size: 17px; }
+            .two-col { grid-template-columns: 1fr; gap: 30px; }
+            .vase-deco { font-size: 80px; right: 20px; bottom: 80px; }
+            .poem { font-size: 20px; }
+            .timeline::before { left: 30px; }
+            .timeline-item, .timeline-item:nth-child(even) { flex-direction: row; }
+            .timeline-year { width: 60px; font-size: 15px; }
+            .timeline-dot { margin: 0 16px; width: 10px; height: 10px; }
+            .nav-bar { padding: 8px 16px; gap: 12px; }
+            .nav-btn { width: 36px; height: 36px; font-size: 16px; }
+        }
+
+        /* 打字机动画 */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .slide.active .title-main,
+        .slide.active .content-title,
+        .slide.active .content-body,
+        .slide.active .two-col,
+        .slide.active .timeline,
+        .slide.active .poem,
+        .slide.active .ending-text,
+        .slide.active .title-sub,
+        .slide.active .title-line,
+        .slide.active .title-date {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .slide.active .title-main { animation-delay: 0.1s; }
+        .slide.active .title-sub { animation-delay: 0.2s; }
+        .slide.active .title-line { animation-delay: 0.3s; }
+        .slide.active .title-date { animation-delay: 0.4s; }
+        .slide.active .content-title { animation-delay: 0.1s; }
+        .slide.active .content-body { animation-delay: 0.2s; }
+        .slide.active .two-col { animation-delay: 0.2s; }
+        .slide.active .timeline { animation-delay: 0.2s; }
+        .slide.active .poem { animation-delay: 0.2s; }
+        .slide.active .ending-text { animation-delay: 0.2s; }
+    </style>
+</head>
+<body>
+    <div class="slides-wrapper">
+        <!-- ====== 第1页：封面 ====== -->
+        <div class="slide slide-bg-1 active" data-index="0">
+            <div class="pattern-top"></div>
+            <div class="pattern-bottom"></div>
+            <div class="deco-border"></div>
+            <div class="vase-deco">🏺</div>
+            <div class="vase-deco-2">🏺</div>
+            <div class="title-main">青花瓷</div>
+            <div class="title-sub">中国传统文化的瑰宝</div>
+            <div class="title-line"></div>
+            <div class="title-date">传承千年 · 雅韵东方</div>
+            <div class="slide-number">01 / 07</div>
+        </div>
+
+        <!-- ====== 第2页：什么是青花瓷 ====== -->
+        <div class="slide slide-bg-2" data-index="1">
+            <div class="pattern-top"></div>
+            <div class="pattern-bottom"></div>
+            <div class="deco-border"></div>
+            <div class="vase-deco">🏺</div>
+            <div class="content-title">什么是青花瓷</div>
+            <div class="content-body" style="max-width: 960px;">
+                青花瓷，又称白地青花瓷，是中国陶瓷装饰艺术的杰出代表。<br>
+                它用含氧化钴的钴矿为原料，在陶瓷坯体上描绘纹饰，<br>
+                再施以透明釉，经高温（约1300°C）还原焰一次烧成。<br><br>
+                钴料烧成后呈蓝色，色泽鲜艳明快，<br>
+                白地蓝花，素雅中见华贵，简约中蕴深邃。
+            </div>
+            <div class="slide-number">02 / 07</div>
+        </div>
+
+        <!-- ====== 第3页：历史源流 ====== -->
+        <div class="slide slide-bg-3" data-index="2">
+            <div class="pattern-top"></div>
+            <div class="pattern-bottom"></div>
+            <div class="deco-border"></div>
+            <div class="vase-deco" style="right: 40px; bottom: 80px;">🏺</div>
+            <div class="content-title">千年传承 · 历史源流</div>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-year">唐代</div>
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-text">青花瓷的萌芽期。河南巩义窑出土了最早的青花碎片，钴料来自西亚。</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-year">元代</div>
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-text">⻩金时代！景德镇将青花瓷推向巅峰，使用进口苏麻离青，发色浓艳。元青花成为世界顶级收藏品。</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-year">明代</div>
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-text">永乐、宣德时期达到鼎盛。官窑民窑并举，风格多样，远销海外，成为世界认识中国的名片。</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-year">清代</div>
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-text">康熙、雍正、乾隆三代工艺臻于极致。发明了青花五彩、青花釉里红等创新技法。</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-year">现代</div>
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-text">青花瓷作为国家级非物质文化遗产，既传承古法，又融入现代设计，走向世界舞台。</div>
+                </div>
+            </div>
+            <div class="slide-number">03 / 07</div>
+        </div>
+
+        <!-- ====== 第4页：工艺之美 ====== -->
+        <div class="slide slide-bg-4" data-index="3">
+            <div class="pattern-top"></div>
+            <div class="pattern-bottom"></div>
+            <div class="deco-border"></div>
+            <div class="content-title">匠心独运 · 工艺之美</div>
+            <div class="two-col" style="margin-top: 10px;">
+                <div class="col-item">
+                    <span class="col-icon">🎨</span>
+                    <div class="col-title">选料</div>
+                    <div class="col-desc">精选景德镇高岭土，质地细腻洁白，为青花之美奠定了"白如玉"的基础。</div>
+                </div>
+                <div class="col-item">
+                    <span class="col-icon">✍️</span>
+                    <div class="col-title">绘制</div>
+                    <div class="col-desc">工匠以钴料为墨，在素坯上挥毫泼墨。一笔一画间，山水花鸟、人物故事跃然其上。</div>
+                </div>
+                <div class="col-item">
+                    <span class="col-icon">🔥</span>
+                    <div class="col-title">烧制</div>
+                    <div class="col-desc">1300°C高温还原焰烧成，钴料由黑变蓝，釉面如镜，永不褪色。</div>
+                </div>
+                <div class="col-item">
+                    <span class="col-icon">💎</span>
+                    <div class="col-title">出窑</div>
+                    <div class="col-desc">经数十道工序，最终成就"白釉青花一火成，花从釉里透分明"的传世之美。</div>
+                </div>
+            </div>
+            <div class="slide-number">04 / 07</div>
+        </div>
+
+        <!-- ====== 第5页：文化内涵 ====== -->
+        <div class="slide slide-bg-5" data-index="4">
+            <div class="pattern-top"></div>
+            <div class="pattern-bottom"></div>
+            <div class="deco-border"></div>
+            <div class="vase-deco" style="left: 40px; top: 60px; font-size: 120px;">🏺</div>
+            <div class="content-title">青白之间 · 文化内涵</div>
+            <div class="content-body left" style="max-width: 900px; font-size: 20px;">
+                <li><strong>天人合一</strong> — 青花瓷取自然之土、之石、之火，成人工之美，是中国"天人合一"哲学的完美体现。</li>
+                <li><strong>儒道风骨</strong> — 青白二色，素雅含蓄，恰如儒家之中正平和、道家之清静无为。</li>
+                <li><strong>吉祥寓意</strong> — 纹饰中常见龙（皇权）、凤（吉祥）、牡丹（富贵）、莲（清廉）、鱼（有余）等，承载着中华民族的美好祈愿。</li>
+                <li><strong>文化使者</strong> — 从丝绸之路到海上陶瓷之路，青花瓷曾是连接东西方文明的纽带，英文"china"一词即源于"昌南"（景德镇旧称）。</li>
+            </div>
+            <div class="slide-number">05 / 07</div>
+        </div>
+
+        <!-- ====== 第6页：经典纹饰 ====== -->
+        <div class="slide slide-bg-6" data-index="5">
+            <div class="pattern-top"></div>
+            <div class="pattern-bottom"></div>
+            <div class="deco-border"></div>
+            <div class="content-title">经典纹饰 · 东方美学</div>
+            <div class="two-col" style="margin-top: 10px;">
+                <div class="col-item">
+                    <span class="col-icon">🐉</span>
+                    <div class="col-title">龙纹</div>
+                    <div class="col-desc">五爪金龙象征皇权至尊，三爪、四爪龙为民间所用。云龙、海水龙等变化万千。</div>
+                </div>
+                <div class="col-item">
+                    <span class="col-icon">🌸</span>
+                    <div class="col-title">缠枝莲</div>
+                    <div class="col-desc">"连绵不断"之意，象征生命绵延、富贵长久。是青花瓷中最经典的植物纹饰。</div>
+                </div>
+                <div class="col-item">
+                    <span class="col-icon">🏔️</span>
+                    <div class="col-title">山水人物</div>
+                    <div class="col-desc">将中国画的意境移植于瓷器之上，"以瓷为纸，以钴为墨"，文人气息浓厚。</div>
+                </div>
+                <div class="col-item">
+                    <span class="col-icon">🦋</span>
+                    <div class="col-title">吉祥组合</div>
+                    <div class="col-desc">"福禄寿喜"纹、龙凤呈祥、松鹤延年，每一笔都是对美好生活的祝福。</div>
+                </div>
+            </div>
+            <div class="slide-number">06 / 07</div>
+        </div>
+
+        <!-- ====== 第7页：结尾 ====== -->
+        <div class="slide slide-bg-7" data-index="6">
+            <div class="pattern-top"></div>
+            <div class="pattern-bottom"></div>
+            <div class="deco-border"></div>
+            <div class="vase-deco" style="right: 80px; top: 40px; font-size: 140px;">🏺</div>
+            <div class="vase-deco-2" style="left: 80px; bottom: 80px; font-size: 80px;">🏺</div>
+            <div class="poem">
+                "白釉青花一火成，<br>
+                花从釉里透分明。<br>
+                可参造化先天妙，<br>
+                无极由来太极生。"
+                <div class="poem-author">—— 清代 · 龚轼《陶歌》</div>
+            </div>
+            <div class="ending-text" style="margin-top: 60px;">
+                传承中华文化<br>
+                让青花之美，永续绽放
+            </div>
+            <div class="slide-number">07 / 07</div>
+        </div>
+    </div>
+
+    <!-- 导航栏 -->
+    <div class="nav-bar">
+        <button class="nav-btn" id="prevBtn">◀</button>
+        <div class="nav-dots" id="navDots"></div>
+        <span class="page-indicator" id="pageIndicator">1 / 7</span>
+        <button class="nav-btn" id="nextBtn">▶</button>
+    </div>
+
+    <script>
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        let current = 0;
+
+        // 生成导航点
+        const navDots = document.getElementById('navDots');
+        for (let i = 0; i < totalSlides; i++) {
+            const dot = document.createElement('button');
+            dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+            dot.addEventListener('click', () => goTo(i));
+            navDots.appendChild(dot);
+        }
+
+        const pageIndicator = document.getElementById('pageIndicator');
+
+        function goTo(index) {
+            if (index < 0 || index >= totalSlides) return;
+            slides[current].classList.remove('active');
+            slides[index].classList.add('active');
+            current = index;
+
+            document.querySelectorAll('.nav-dot').forEach((d, i) => {
+                d.classList.toggle('active', i === current);
+            });
+            pageIndicator.textContent = `${current + 1} / ${totalSlides}`;
+        }
+
+        document.getElementById('prevBtn').addEventListener('click', () => goTo(current - 1));
+        document.getElementById('nextBtn').addEventListener('click', () => goTo(current + 1));
+
+        // 键盘左右键
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') goTo(current - 1);
+            if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); goTo(current + 1); }
+        });
+
+        // 触摸支持
+        let touchStartX = 0, touchEndX = 0;
+        document.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; });
+        document.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            const diff = touchStartX - touchEndX;
+            if (Math.abs(diff) > 50) {
+                if (diff > 0) goTo(current + 1);
+                else goTo(current - 1);
+            }
+        });
+    </script>
+</body>
+</html>
