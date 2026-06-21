@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🔥 火灾逃生思维导图</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #1a1a2e;
+  font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 40px;
+}
+.mindmap {
+  width: 1200px;
+  background: linear-gradient(145deg, #0f3460, #16213e);
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  position: relative;
+  overflow: hidden;
+}
+.mindmap::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: radial-gradient(circle at 20% 50%, rgba(255,100,50,0.05) 0%, transparent 50%),
+              radial-gradient(circle at 80% 50%, rgba(50,150,255,0.05) 0%, transparent 50%);
+  pointer-events: none;
+}
+/* Title */
+.title {
+  text-align: center;
+  color: #fff;
+  font-size: 36px;
+  font-weight: 800;
+  margin-bottom: 10px;
+  letter-spacing: 2px;
+  text-shadow: 0 2px 10px rgba(255,100,50,0.3);
+}
+.title .icon { font-size: 42px; }
+.subtitle {
+  text-align: center;
+  color: rgba(255,255,255,0.4);
+  font-size: 14px;
+  margin-bottom: 30px;
+  letter-spacing: 4px;
+}
+/* Center Node */
+.center-node {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+.center-node .node {
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+  color: #fff;
+  padding: 16px 50px;
+  border-radius: 50px;
+  font-size: 24px;
+  font-weight: 700;
+  box-shadow: 0 8px 25px rgba(231,76,60,0.4);
+  letter-spacing: 2px;
+}
+/* Grid Layout */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+/* Branch Card */
+.branch {
+  background: rgba(255,255,255,0.06);
+  border-radius: 16px;
+  padding: 20px;
+  border: 1px solid rgba(255,255,255,0.08);
+  backdrop-filter: blur(10px);
+  transition: transform 0.2s;
+}
+.branch:hover { transform: translateY(-3px); }
+.branch-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid rgba(255,255,255,0.1);
+}
+.branch-number {
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+}
+.branch-title {
+  color: #fff;
+  font-size: 17px;
+  font-weight: 700;
+}
+.branch-items {
+  list-style: none;
+}
+.branch-items li {
+  color: rgba(255,255,255,0.8);
+  font-size: 13.5px;
+  padding: 5px 0;
+  padding-left: 18px;
+  position: relative;
+  line-height: 1.5;
+}
+.branch-items li::before {
+  content: '▸';
+  position: absolute;
+  left: 0;
+  color: rgba(255,255,255,0.3);
+}
+.branch-items li.highlight {
+  color: #f39c12;
+}
+.branch-items li.danger {
+  color: #e74c3c;
+}
+.branch-items li.ok {
+  color: #2ecc71;
+}
+.branch-items li .tag {
+  display: inline-block;
+  font-size: 11px;
+  padding: 1px 8px;
+  border-radius: 10px;
+  margin-left: 4px;
+}
+.tag.red { background: rgba(231,76,60,0.3); color: #e74c3c; }
+.tag.green { background: rgba(46,204,113,0.3); color: #2ecc71; }
+.tag.yellow { background: rgba(243,156,18,0.3); color: #f39c12; }
+.tag.blue { background: rgba(52,152,219,0.3); color: #3498db; }
+
+/* Color accents per column */
+.col-1 .branch { border-left: 3px solid #e74c3c; }
+.col-2 .branch { border-left: 3px solid #3498db; }
+.col-3 .branch { border-left: 3px solid #2ecc71; }
+.col-4 .branch { border-left: 3px solid #f39c12; }
+
+/* Special full-width row */
+.full-row {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+/* Branch colors by group */
+.group-fire .branch-title { color: #e74c3c; }
+.group-safe .branch-title { color: #2ecc71; }
+.group-warn .branch-title { color: #f39c12; }
+.group-info .branch-title { color: #3498db; }
+
+.footer {
+  margin-top: 25px;
+  text-align: center;
+  color: rgba(255,255,255,0.25);
+  font-size: 12px;
+  letter-spacing: 2px;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .grid { grid-template-columns: repeat(2, 1fr); }
+  .full-row { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 600px) {
+  .grid { grid-template-columns: 1fr; }
+  .full-row { grid-template-columns: 1fr; }
+  .mindmap { padding: 20px; }
+  .branch { padding: 14px; }
+}
+</style>
+</head>
+<body>
+<div class="mindmap" id="map">
+  <div class="title"><span class="icon">🔥</span> 火灾逃生指南</div>
+  <div class="subtitle">— 生命安全思维导图 · 关键时刻能救命 —</div>
+
+  <div class="center-node">
+    <div class="node">🧯 火灾逃生 · 黄金法则</div>
+  </div>
+
+  <div class="grid">
+    <!-- Column 1 -->
+    <div class="col-1">
+      <!-- 1. 预防为主 -->
+      <div class="branch group-fire">
+        <div class="branch-header">
+          <div class="branch-number">1</div>
+          <div class="branch-title">🛡️ 预防为主</div>
+        </div>
+        <ul class="branch-items">
+          <li>安装烟雾报警器 <span class="tag green">必备</span></li>
+          <li>备：灭火器 · 防烟面具 · 逃生绳</li>
+          <li>熟悉楼道 &amp; 安全出口位置</li>
+          <li>不私拉乱接电线</li>
+          <li>定期检查燃气 &amp; 电器</li>
+        </ul>
+      </div>
+
+      <!-- 5. 身上着火 -->
+      <div class="branch group-warn">
+        <div class="branch-header">
+          <div class="branch-number">5</div>
+          <div class="branch-title">🔥 身上着火</div>
+        </div>
+        <ul class="branch-items">
+          <li class="highlight">🛑 停 · 🛌 躺 · 🔄 滚</li>
+          <li class="danger">切勿奔跑（风会助燃）</li>
+          <li>用湿毯子或水扑灭</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Column 2 -->
+    <div class="col-2">
+      <!-- 2. 发现火情 -->
+      <div class="branch group-fire">
+        <div class="branch-header">
+          <div class="branch-number">2</div>
+          <div class="branch-title">🚨 发现火情</div>
+        </div>
+        <ul class="branch-items">
+          <li>保持冷静，判断火势</li>
+          <li class="highlight">立即拨打 119 🚒</li>
+          <li>大声呼喊、敲击提醒他人</li>
+          <li class="danger">切勿乘坐电梯 ❌</li>
+        </ul>
+      </div>
+
+      <!-- 6. 被困室内 -->
+      <div class="branch group-warn">
+        <div class="branch-header">
+          <div class="branch-number">6</div>
+          <div class="branch-title">🏠 被困室内</div>
+        </div>
+        <ul class="branch-items">
+          <li>关门堵缝（湿布塞门缝）</li>
+          <li>到靠窗位置等待 🪟</li>
+          <li>挥舞鲜艳衣物呼救</li>
+          <li>手电筒 / 手机闪光灯示警</li>
+          <li class="danger">切勿躲床底、衣柜 ❌</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Column 3 -->
+    <div class="col-3">
+      <!-- 3. 逃生原则 -->
+      <div class="branch group-safe">
+        <div class="branch-header">
+          <div class="branch-number">3</div>
+          <div class="branch-title">🚶 逃生原则</div>
+        </div>
+        <ul class="branch-items">
+          <li>低姿匍匐（烟往上走）</li>
+          <li>湿毛巾捂口鼻（过滤毒烟）</li>
+          <li>扶墙前进（沿墙找出口）</li>
+          <li>关门阻火（延缓火势蔓延）</li>
+          <li>向下逃生为主（火往上烧）</li>
+        </ul>
+      </div>
+
+      <!-- 7. 关键禁忌 -->
+      <div class="branch group-danger">
+        <div class="branch-header">
+          <div class="branch-number">7</div>
+          <div class="branch-title">⛔ 关键禁忌</div>
+        </div>
+        <ul class="branch-items">
+          <li class="danger">不贪恋财物 💰❌</li>
+          <li class="danger">不重返火场 🔙❌</li>
+          <li class="danger">不跳楼（除非低层无路）</li>
+          <li class="danger">不乘坐电梯 ⏬❌</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Column 4 -->
+    <div class="col-4">
+      <!-- 4. 不同场景 -->
+      <div class="branch group-info">
+        <div class="branch-header">
+          <div class="branch-number">4</div>
+          <div class="branch-title">🌍 不同场景</div>
+        </div>
+        <ul class="branch-items">
+          <li><span class="tag blue">🏠 住宅</span> 走楼梯 / 退守房间</li>
+          <li><span class="tag blue">🏢 高层</span> 消防通道 · 勿跳楼</li>
+          <li><span class="tag blue">🏨 商场</span> 看路线图 · 沿指示跑</li>
+          <li><span class="tag blue">🚇 地铁</span> 听广播 · 用破窗锤</li>
+        </ul>
+      </div>
+
+      <!-- 8. 逃生后 -->
+      <div class="branch group-safe">
+        <div class="branch-header">
+          <div class="branch-number">8</div>
+          <div class="branch-title">✅ 逃生后</div>
+        </div>
+        <ul class="branch-items">
+          <li class="ok">到指定集合点清点人数</li>
+          <li class="danger">不擅自返回</li>
+          <li>配合消防人员说明情况</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">生命至上 · 安全第一 · 防患于未然</div>
+</div>
+</body>
+</html>
