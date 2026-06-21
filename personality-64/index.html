@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>64题 · 深度人格画像</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px 12px;
+        }
+        .container {
+            max-width: 600px;
+            width: 100%;
+            margin: 0 auto;
+            padding-top: 20px;
+        }
+        /* 开始页 */
+        .start-page {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 24px;
+            padding: 50px 30px;
+            text-align: center;
+        }
+        .start-page .big-icon { font-size: 72px; margin-bottom: 20px; }
+        .start-page h1 {
+            font-size: 30px;
+            color: #fff;
+            font-weight: 800;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+        .start-page h1 span { background: linear-gradient(135deg, #f093fb, #f5576c); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .start-page .sub {
+            color: rgba(255,255,255,0.5);
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        .start-page .desc {
+            color: rgba(255,255,255,0.4);
+            font-size: 13px;
+            line-height: 1.8;
+            margin-bottom: 30px;
+        }
+        .start-page .name-input {
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 14px;
+            border: 1px solid rgba(255,255,255,0.15);
+            background: rgba(255,255,255,0.06);
+            color: #fff;
+            font-size: 16px;
+            text-align: center;
+            margin-bottom: 15px;
+            outline: none;
+            transition: all 0.3s;
+        }
+        .start-page .name-input:focus { border-color: #f093fb; background: rgba(255,255,255,0.1); }
+        .start-page .name-input::placeholder { color: rgba(255,255,255,0.3); }
+        .btn-start {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: #fff;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            letter-spacing: 3px;
+            transition: all 0.3s;
+        }
+        .btn-start:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(245,87,108,0.4); }
+        .btn-start:active { transform: scale(0.97); }
+
+        /* 答题页 */
+        .quiz-page { display: none; }
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .quiz-header .name-tag {
+            color: rgba(255,255,255,0.6);
+            font-size: 14px;
+            background: rgba(255,255,255,0.06);
+            padding: 6px 14px;
+            border-radius: 20px;
+        }
+        .quiz-header .name-tag span { color: #f093fb; font-weight: 700; }
+        .progress-info {
+            color: rgba(255,255,255,0.4);
+            font-size: 13px;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 3px;
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #f093fb, #f5576c);
+            border-radius: 3px;
+            transition: width 0.4s ease;
+            width: 0%;
+        }
+
+        .question-card {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 28px 24px;
+            min-height: 300px;
+        }
+        .q-category {
+            font-size: 12px;
+            color: #f093fb;
+            font-weight: 600;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+        .q-number {
+            font-size: 13px;
+            color: rgba(255,255,255,0.3);
+            margin-bottom: 16px;
+        }
+        .q-text {
+            font-size: 19px;
+            color: #fff;
+            font-weight: 600;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .option-btn {
+            padding: 14px 18px;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            background: rgba(255,255,255,0.04);
+            color: rgba(255,255,255,0.8);
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-align: left;
+            line-height: 1.4;
+        }
+        .option-btn:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); transform: translateX(4px); }
+        .option-btn.selected {
+            background: linear-gradient(135deg, rgba(240,147,251,0.2), rgba(245,87,108,0.2));
+            border-color: #f093fb;
+            color: #fff;
+        }
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        .btn-prev, .btn-next {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-prev {
+            background: rgba(255,255,255,0.08);
+            color: rgba(255,255,255,0.5);
+        }
+        .btn-prev:hover { background: rgba(255,255,255,0.15); }
+        .btn-next {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: #fff;
+        }
+        .btn-next:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(245,87,108,0.3); }
+        .btn-next:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+        .btn-prev:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        /* 结果页 */
+        .result-page { display: none; }
+        .result-card {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 24px;
+            padding: 30px 24px;
+        }
+        .result-card .r-name {
+            text-align: center;
+            font-size: 32px;
+            color: #fff;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+        .result-card .r-sub {
+            text-align: center;
+            color: rgba(255,255,255,0.4);
+            font-size: 13px;
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            color: #f093fb;
+            font-weight: 700;
+            margin: 20px 0 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        .section-title .emoji { margin-right: 6px; }
+
+        .trait-bar-wrap {
+            margin-bottom: 12px;
+        }
+        .trait-bar-wrap .trait-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 4px;
+        }
+        .trait-bar-wrap .trait-label .val { color: #f093fb; font-weight: 700; }
+        .trait-bar-bg {
+            height: 8px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .trait-bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            background: linear-gradient(90deg, #f093fb, #f5576c);
+            transition: width 1s ease;
+        }
+
+        .tag-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        .tag-item {
+            background: rgba(240,147,251,0.12);
+            border: 1px solid rgba(240,147,251,0.2);
+            border-radius: 20px;
+            padding: 6px 16px;
+            font-size: 13px;
+            color: rgba(255,255,255,0.8);
+        }
+
+        .answer-log {
+            margin-top: 24px;
+            padding: 16px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 12px;
+        }
+        .answer-log .log-title {
+            font-size: 13px;
+            color: rgba(255,255,255,0.3);
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+        .answer-log .log-content {
+            font-size: 11px;
+            color: rgba(255,255,255,0.25);
+            line-height: 1.6;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .answer-log .log-content span { color: rgba(255,255,255,0.5); }
+
+        .btn-restart {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            margin-top: 16px;
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 14px;
+            background: rgba(255,255,255,0.05);
+            color: rgba(255,255,255,0.6);
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        .btn-restart:hover { background: rgba(255,255,255,0.1); }
+
+        .hidden { display: none; }
+
+        @media (max-width: 480px) {
+            .start-page { padding: 30px 20px; }
+            .start-page h1 { font-size: 24px; }
+            .question-card { padding: 20px 16px; }
+            .q-text { font-size: 17px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 开始页 -->
+        <div class="start-page" id="startPage">
+            <div class="big-icon">🧩</div>
+            <h1>深度<span>人格画像</span></h1>
+            <p class="sub">64道题 · 全方位了解一个人</p>
+            <p class="desc">
+                请认真回答每一道题，答案没有对错<br>
+                完成后将生成专属你的性格·喜好·弱点画像
+            </p>
+            <input class="name-input" id="nameInput" type="text" placeholder="你的名字或昵称" maxlength="20">
+            <button class="btn-start" id="startBtn">开始测试 →</button>
+        </div>
+
+        <!-- 答题页 -->
+        <div class="quiz-page" id="quizPage">
+            <div class="quiz-header">
+                <div class="name-tag">🧑 <span id="qUserName"></span></div>
+                <div class="progress-info"><span id="qNum">1</span> / 64</div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="question-card" id="questionCard">
+                <div class="q-category" id="qCategory">性格</div>
+                <div class="q-number" id="qNumber">第 1 / 64 题</div>
+                <div class="q-text" id="qText"></div>
+                <div class="options" id="options"></div>
+                <div class="btn-group">
+                    <button class="btn-prev" id="prevBtn">← 上一题</button>
+                    <button class="btn-next" id="nextBtn">下一题 →</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 结果页 -->
+        <div class="result-page" id="resultPage">
+            <div class="result-card" id="resultCard"></div>
+        </div>
+    </div>
+
+    <script>
+    // ============================================================
+    // 64题题库 - 覆盖 性格(24) + 喜好(20) + 弱点(20)
+    // ============================================================
+    const QUESTIONS = [
+        // ===== 性格篇 (1-24) =====
+        { id:1, cat:"性格", q:"周末你更喜欢怎么过？", opts:["约朋友出去玩","一个人宅着","跟一两个好友小聚","看心情"] },
+        { id:2, cat:"性格", q:"在陌生聚会上你通常？", opts:["主动搭话认识人","找角落安静待着","等别人来找你聊","只跟认识的人聊"] },
+        { id:3, cat:"性格", q:"做重要决定时你更依赖？", opts:["逻辑分析","直觉感受","听取他人建议","凭经验判断"] },
+        { id:4, cat:"性格", q:"你对新事物的态度是？", opts:["积极尝试","谨慎观望","看别人试了再说","只接受喜欢的"] },
+        { id:5, cat:"性格", q:"团队合作中你更像？", opts:["领导者","执行者","协调者","创意者"] },
+        { id:6, cat:"性格", q:"遇到困难时你通常？", opts:["自己想办法解决","找朋友帮忙","先放着不管","寻求专业帮助"] },
+        { id:7, cat:"性格", q:"你更擅长哪种思维？", opts:["逻辑推理","创意发散","实际操作","社交沟通"] },
+        { id:8, cat:"性格", q:"你对计划的执行度如何？", opts:["严格按计划","灵活调整","不太做计划","随缘走"] },
+        { id:9, cat:"性格", q:"你如何处理压力？", opts:["运动/行动","找人倾诉","听歌/独处","吃吃喝喝"] },
+        { id:10, cat:"性格", q:"你说话的方式偏？", opts:["直接了当","委婉含蓄","幽默风趣","认真严谨"] },
+        { id:11, cat:"性格", q:"你对批评的反应是？", opts:["认真反思","有点抵触","表面接受","直接辩驳"] },
+        { id:12, cat:"性格", q:"你更喜欢什么样的环境？", opts:["热闹活跃","安静舒适","有秩序感","自由随性"] },
+        { id:13, cat:"性格", q:"你对自己的评价是？", opts:["自信乐观","谨慎谦虚","有点焦虑","随遇而安"] },
+        { id:14, cat:"性格", q:"你对承诺的态度？", opts:["说到做到","量力而行","看情况","尽量做到"] },
+        { id:15, cat:"性格", q:"你更喜欢哪种沟通方式？", opts:["当面聊","文字消息","电话","语音消息"] },
+        { id:16, cat:"性格", q:"你对规则的态度？", opts:["严格遵守","灵活变通","看心情","能绕就绕"] },
+        { id:17, cat:"性格", q:"你如何看待失败？", opts:["学习机会","打击挫折","正常现象","尽量避免"] },
+        { id:18, cat:"性格", q:"你的决策速度是？", opts:["果断快速","慎重考虑","比较纠结","凭一时冲动"] },
+        { id:19, cat:"性格", q:"你更关注细节还是全局？", opts:["关注全局","注重细节","两者兼顾","看情况"] },
+        { id:20, cat:"性格", q:"你如何处理冲突？", opts:["主动沟通解决","回避不理","找第三方调解","等对方先开口"] },
+        { id:21, cat:"性格", q:"你的情绪表达方式是？", opts:["直接表露","压抑隐藏","选择性表达","通过行动表达"] },
+        { id:22, cat:"性格", q:"你更擅长什么类型的学习？", opts:["阅读/听讲","动手实践","讨论交流","观察模仿"] },
+        { id:23, cat:"性格", q:"你如何看待变化？", opts:["欢迎变化","害怕变化","被动适应","主动创造变化"] },
+        { id:24, cat:"性格", q:"你的能量来源是？", opts:["与他人相处","独处充电","做喜欢的事","从成就中获得"] },
+
+        // ===== 喜好篇 (25-44) =====
+        { id:25, cat:"喜好", q:"你最喜欢的休闲方式是？", opts:["玩游戏/刷手机","运动健身","看书/看剧","出门旅行"] },
+        { id:26, cat:"喜好", q:"你更喜欢哪种食物？", opts:["辣的","甜的","咸的","酸的"] },
+        { id:27, cat:"喜好", q:"你更偏好哪种天气？", opts:["晴天","阴雨天","凉爽秋天","雪天"] },
+        { id:28, cat:"喜好", q:"你喜欢的音乐类型是？", opts:["流行","摇滚/电子","民谣/轻音乐","说唱/R&B"] },
+        { id:29, cat:"喜好", q:"你更喜欢哪种动物？", opts:["狗","猫","鸟","鱼/爬宠"] },
+        { id:30, cat:"喜好", q:"你喜欢什么类型的电影？", opts:["喜剧","科幻/奇幻","悬疑/推理","爱情/文艺"] },
+        { id:31, cat:"喜好", q:"你更喜欢哪种社交场合？", opts:["大型派对","小圈子聚会","一对一深聊","线上聊天"] },
+        { id:32, cat:"喜好", q:"你喜欢的穿衣风格是？", opts:["休闲舒适","简约干净","潮流时尚","正式精致"] },
+        { id:33, cat:"喜好", q:"你更喜欢白天还是晚上？", opts:["白天","晚上","都差不多","看季节"] },
+        { id:34, cat:"喜好", q:"你理想的居住环境是？", opts:["城市中心","近郊小区","乡村/自然","交通便利就行"] },
+        { id:35, cat:"喜好", q:"你更喜欢哪种运动？", opts:["球类/团队运动","跑步/健身","游泳/瑜伽","不太运动"] },
+        { id:36, cat:"喜好", q:"你喜欢的颜色是？", opts:["暖色系（红橙黄）","冷色系（蓝绿紫）","黑白灰","浅色系"] },
+        { id:37, cat:"喜好", q:"你更喜欢哪种旅行方式？", opts:["自由行/探险","跟团/省心","文化深度游","度假放松"] },
+        { id:38, cat:"喜好", q:"你平时更喜欢喝什么？", opts:["咖啡","茶","奶茶/果汁","白水"] },
+        { id:39, cat:"喜好", q:"你更喜欢哪种游戏？", opts:["竞技类","剧情类","休闲益智","不玩游戏"] },
+        { id:40, cat:"喜好", q:"你喜欢的阅读类型是？", opts:["小说/文学","科普/历史","漫画/轻小说","不太看书"] },
+        { id:41, cat:"喜好", q:"你更喜欢哪种假期？", opts:["充实忙碌型","完全躺平型","旅行探索型","学习提升型"] },
+        { id:42, cat:"喜好", q:"你最喜欢的季节是？", opts:["春天","夏天","秋天","冬天"] },
+        { id:43, cat:"喜好", q:"你对宠物的态度？", opts:["非常喜欢","可以接受","不太喜欢","过敏/不能养"] },
+        { id:44, cat:"喜好", q:"你更喜欢哪种艺术形式？", opts:["绘画","音乐","舞蹈","书法/手工"] },
+
+        // ===== 弱点篇 (45-64) =====
+        { id:45, cat:"弱点", q:"你最大的缺点是？", opts:["拖延症","容易暴躁","过于敏感","优柔寡断"] },
+        { id:46, cat:"弱点", q:"你最常因为什么而焦虑？", opts:["未来不确定性","人际关系","工作/学业压力","金钱问题"] },
+        { id:47, cat:"弱点", q:"你不太擅长的技能是？", opts:["社交沟通","时间管理","情绪控制","坚持到底"] },
+        { id:48, cat:"弱点", q:"你最容易在什么时候发脾气？", opts:["被误解时","计划被打乱时","累的时候","不被尊重时"] },
+        { id:49, cat:"弱点", q:"你最害怕什么？", opts:["孤独","失败","失控","被否定"] },
+        { id:50, cat:"弱点", q:"你的哪个特质容易被人误解？", opts:["看起来冷漠","太爱开玩笑","太过认真","说话太直"] },
+        { id:51, cat:"弱点", q:"你最容易放弃的事情是？", opts:["长期目标","复杂的事情","不感兴趣的事","有困难的事"] },
+        { id:52, cat:"弱点", q:"你的睡眠质量如何？", opts:["很好倒头就睡","不太好容易醒","经常熬夜","需要助眠"] },
+        { id:53, cat:"弱点", q:"你最不擅长处理什么？", opts:["人际关系","数学/逻辑","手工/操作","公众演讲"] },
+        { id:54, cat:"弱点", q:"你容易在哪方面过度？", opts:["想太多","吃太多","花钱太多","工作太多"] },
+        { id:55, cat:"弱点", q:"你被批评时第一反应是？", opts:["自我怀疑","找借口解释","假装不在意","内心生气"] },
+        { id:56, cat:"弱点", q:"你最讨厌什么样的人？", opts:["虚伪/两面派","自私/冷漠","傲慢/自大","负能量爆棚"] },
+        { id:57, cat:"弱点", q:"你最后悔的习惯是？", opts:["熬夜","拖延","冲动消费","暴饮暴食"] },
+        { id:58, cat:"弱点", q:"你最难拒绝什么？", opts:["美食","别人的请求","购物诱惑","舒适区"] },
+        { id:59, cat:"弱点", q:"你最容易在哪方面不自信？", opts:["外表","能力","社交","领导力"] },
+        { id:60, cat:"弱点", q:"你处理批评的能力如何？", opts:["很差容易受伤","一般能接受","较好能反思","完全不在乎"] },
+        { id:61, cat:"弱点", q:"你最容易被什么打动？", opts:["真诚的关怀","实际的帮助","浪漫的举动","被理解"] },
+        { id:62, cat:"弱点", q:"你的耐心程度是？", opts:["很好很有耐心","一般般","比较差","看事情而定"] },
+        { id:63, cat:"弱点", q:"你容易被什么分散注意力？", opts:["手机/社交媒体","周围的人","胡思乱想","外部噪音"] },
+        { id:64, cat:"弱点", q:"你觉得自己最需要改进的是？", opts:["自律能力","社交能力","情绪管理","行动力"] }
+    ];
+
+    // ============================================================
+    // 状态
+    // ============================================================
+    let state = {
+        name: '',
+        answers: new Array(64).fill(null),
+        currentIdx: 0
+    };
+
+    // ============================================================
+    // DOM引用
+    // ============================================================
+    const $ = id => document.getElementById(id);
+    const startPage = $('startPage');
+    const quizPage = $('quizPage');
+    const resultPage = $('resultPage');
+    const nameInput = $('nameInput');
+    const startBtn = $('startBtn');
+    const qUserName = $('qUserName');
+    const qNum = $('qNum');
+    const progressFill = $('progressFill');
+    const qCategory = $('qCategory');
+    const qNumber = $('qNumber');
+    const qText = $('qText');
+    const options = $('options');
+    const prevBtn = $('prevBtn');
+    const nextBtn = $('nextBtn');
+    const resultCard = $('resultCard');
+
+    // ============================================================
+    // 开始
+    // ============================================================
+    startBtn.addEventListener('click', startQuiz);
+    nameInput.addEventListener('keydown', e => { if(e.key==='Enter') startQuiz(); });
+
+    function startQuiz() {
+        const name = nameInput.value.trim();
+        if(!name) { nameInput.style.borderColor = '#f5576c'; nameInput.placeholder = '请先输入名字~'; return; }
+        state.name = name;
+        state.answers.fill(null);
+        state.currentIdx = 0;
+        startPage.style.display = 'none';
+        quizPage.style.display = 'block';
+        qUserName.textContent = name;
+        renderQuestion();
+    }
+
+    // ============================================================
+    // 渲染题目
+    // ============================================================
+    function renderQuestion() {
+        const idx = state.currentIdx;
+        const q = QUESTIONS[idx];
+        qCategory.textContent = q.cat;
+        qNumber.textContent = `第 ${idx+1} / 64 题`;
+        qText.textContent = q.q;
+
+        // 进度
+        const answered = state.answers.filter(a => a !== null).length;
+        const pct = (answered / 64) * 100;
+        progressFill.style.width = pct + '%';
+        qNum.textContent = idx + 1;
+
+        // 选项
+        options.innerHTML = '';
+        q.opts.forEach((opt, oi) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn' + (state.answers[idx] === oi ? ' selected' : '');
+            btn.textContent = opt;
+            btn.addEventListener('click', () => selectOption(oi));
+            options.appendChild(btn);
+        });
+
+        updateButtons();
+    }
+
+    function selectOption(oi) {
+        state.answers[state.currentIdx] = oi;
+        const btns = options.querySelectorAll('.option-btn');
+        btns.forEach((b, i) => b.classList.toggle('selected', i === oi));
+        updateButtons();
+        // 自动更新进度
+        const answered = state.answers.filter(a => a !== null).length;
+        const pct = (answered / 64) * 100;
+        progressFill.style.width = pct + '%';
+    }
+
+    function updateButtons() {
+        prevBtn.disabled = state.currentIdx === 0;
+        const hasAnswer = state.answers[state.currentIdx] !== null;
+        const isLast = state.currentIdx === 63;
+        if(isLast) {
+            nextBtn.textContent = '🎯 查看画像';
+            nextBtn.disabled = !hasAnswer;
+        } else {
+            nextBtn.textContent = '下一题 →';
+            nextBtn.disabled = !hasAnswer;
+        }
+    }
+
+    // 导航
+    prevBtn.addEventListener('click', () => {
+        if(state.currentIdx > 0) { state.currentIdx--; renderQuestion(); }
+    });
+    nextBtn.addEventListener('click', () => {
+        if(state.answers[state.currentIdx] === null) return;
+        if(state.currentIdx === 63) { showResult(); return; }
+        state.currentIdx++;
+        renderQuestion();
+    });
+
+    // 键盘
+    document.addEventListener('keydown', e => {
+        if(quizPage.style.display !== 'block') return;
+        if(e.key === 'ArrowLeft' && !prevBtn.disabled) prevBtn.click();
+        if(e.key === 'ArrowRight' && !nextBtn.disabled) nextBtn.click();
+        if(e.key >= '1' && e.key <= '4') {
+            const idx = parseInt(e.key) - 1;
+            const btns = options.querySelectorAll('.option-btn');
+            if(btns[idx]) btns[idx].click();
+        }
+    });
+
+    // ============================================================
+    // 生成画像
+    // ============================================================
+    function analyzePersonality(answers) {
+        // 性格维度（1-24题）
+        const extrovert = [0,1].filter(i => answers[i]===0).length; // E
+        const introvert = [0,1].filter(i => answers[i]===1).length; // I
+        const social = answers[0]; // 0=外 1=内 2=中间 3=随性
+        const decision = answers[2]; // 0=逻辑 1=直觉 2=他人 3=经验
+        const novelty = answers[3]; // 0=积极 1=谨慎 2=观望 3=只接受
+        const teamRole = answers[4]; // 0=领导 1=执行 2=协调 3=创意
+        const stress = answers[8]; // 0=运动 1=倾诉 2=独处 3=吃
+        const energy = answers[23]; // 0=社交 1=独处 2=爱好 3=成就
+
+        let personalityType = '';
+        let personalityDesc = '';
+
+        // 外向/内向
+        const isExtrovert = (social===0) || (energy===0);
+        const isIntrovert = (social===1) || (energy===1);
+
+        if(isExtrovert && decision===0) personalityType = '理性行动派';
+        else if(isExtrovert && decision===1) personalityType = '热情社交派';
+        else if(isIntrovert && decision===0) personalityType = '冷静思考派';
+        else if(isIntrovert && decision===1) personalityType = '内敛敏感派';
+        else if(novelty===0) personalityType = '开放冒险派';
+        else personalityType = '谨慎稳健派';
+
+        if(isExtrovert) personalityDesc = '你从社交中获得能量，喜欢与人互动，在人群中感到自在。';
+        else personalityDesc = '你从独处中获得能量，需要个人空间来恢复精力。';
+
+        if(decision===0) personalityDesc += '你习惯用理性分析做决策，注重事实和逻辑。';
+        else personalityDesc += '你习惯跟随内心感受做决策，注重价值观和情感。';
+
+        // 喜好维度（25-44题）
+        const foodPref = answers[25]; // 0=辣 1=甜 2=咸 3=酸
+        const travelPref = answers[36]; // 0=自由行 1=跟团 2=文化 3=度假
+        const musicPref = answers[27]; // 0=流行 1=摇滚 2=民谣 3=说唱
+        const socialPref = answers[30]; // 0=大型 1=小圈子 2=一对一 3=线上
+        const sportPref = answers[34]; // 0=球类 1=跑步 2=游泳 3=不运动
+
+        // 弱点维度（45-64题）
+        const topWeakness = [
+            ['拖延症','容易暴躁','过于敏感','优柔寡断'],
+            ['未来不确定性','人际关系','工作压力','金钱问题'],
+            ['社交沟通','时间管理','情绪控制','坚持到底']
+        ];
+        const weakness1 = answers[44];
+        const weakness2 = answers[45];
+        const weakness3 = answers[46];
+
+        return {
+            type: personalityType,
+            desc: personalityDesc,
+            traits: {
+                extrovert: isExtrovert,
+                introvert: isIntrovert,
+                rational: decision===0,
+                emotional: decision===1,
+                adventurous: novelty===0 || novelty===3,
+                cautious: novelty===1 || novelty===2,
+                leader: teamRole===0,
+                executor: teamRole===1
+            },
+            likes: {
+                food: ['辣味','甜味','咸味','酸味'][foodPref] || '多样化',
+                music: ['流行音乐','摇滚/电子','民谣/轻音乐','说唱/R&B'][musicPref] || '多样化',
+                social: ['大型派对','小圈子聚会','一对一深聊','线上聊天'][socialPref] || '看情况',
+                travel: ['自由行探险','跟团省心','文化深度游','度假放松'][travelPref] || '看心情',
+                sport: ['球类运动','跑步/健身','游泳/瑜伽','不太运动'][sportPref] || '看情况'
+            },
+            weaknesses: [
+                ['拖延症','容易暴躁','过于敏感','优柔寡断'][weakness1] || '难以确定',
+                ['未来不确定性','人际关系','工作/学业压力','金钱问题'][weakness2] || '难以确定',
+                ['社交沟通','时间管理','情绪控制','坚持到底'][weakness3] || '难以确定'
+            ],
+            rawAnswers: answers.slice()
+        };
+    }
+
+    function showResult() {
+        quizPage.style.display = 'none';
+        resultPage.style.display = 'block';
+
+        const analysis = analyzePersonality(state.answers);
+        const name = state.name;
+
+        // 生成回答日志（每题答案）
+        let logHTML = '';
+        for(let i=0; i<64; i++) {
+            const q = QUESTIONS[i];
+            const ans = state.answers[i];
+            const ansText = ans !== null ? q.opts[ans] : '未回答';
+            logHTML += `<div>Q${i+1}. ${q.q} → <span>${ansText}</span></div>`;
+        }
+
+        resultCard.innerHTML = `
+            <div class="r-name">🧩 ${name}</div>
+            <div class="r-sub">基于64道题得出的深度人格画像</div>
+
+            <div class="section-title"><span class="emoji">🎯</span>核心性格类型</div>
+            <div style="text-align:center;font-size:28px;color:#f093fb;font-weight:800;margin-bottom:8px;">${analysis.type}</div>
+            <div style="color:rgba(255,255,255,0.6);font-size:14px;line-height:1.8;margin-bottom:16px;">${analysis.desc}</div>
+
+            <div class="section-title"><span class="emoji">📊</span>性格维度</div>
+            <div class="trait-bar-wrap">
+                <div class="trait-label"><span>外向</span><span class="val">${analysis.traits.extrovert ? '较强' : '一般'}</span></div>
+                <div class="trait-bar-bg"><div class="trait-bar-fill" style="width:${analysis.traits.extrovert ? 70 : 30}%"></div></div>
+            </div>
+            <div class="trait-bar-wrap">
+                <div class="trait-label"><span>理性</span><span class="val">${analysis.traits.rational ? '较强' : '一般'}</span></div>
+                <div class="trait-bar-bg"><div class="trait-bar-fill" style="width:${analysis.traits.rational ? 65 : 35}%"></div></div>
+            </div>
+            <div class="trait-bar-wrap">
+                <div class="trait-label"><span>冒险精神</span><span class="val">${analysis.traits.adventurous ? '较强' : '一般'}</span></div>
+                <div class="trait-bar-bg"><div class="trait-bar-fill" style="width:${analysis.traits.adventurous ? 65 : 35}%"></div></div>
+            </div>
+            <div class="trait-bar-wrap">
+                <div class="trait-label"><span>领导倾向</span><span class="val">${analysis.traits.leader ? '较强' : '一般'}</span></div>
+                <div class="trait-bar-bg"><div class="trait-bar-fill" style="width:${analysis.traits.leader ? 60 : 40}%"></div></div>
+            </div>
+
+            <div class="section-title"><span class="emoji">❤️</span>喜好画像</div>
+            <div class="tag-list">
+                <span class="tag-item">🍲 口味: ${analysis.likes.food}</span>
+                <span class="tag-item">🎵 音乐: ${analysis.likes.music}</span>
+                <span class="tag-item">👥 社交: ${analysis.likes.social}</span>
+                <span class="tag-item">✈️ 旅行: ${analysis.likes.travel}</span>
+                <span class="tag-item">🏃 运动: ${analysis.likes.sport}</span>
+            </div>
+
+            <div class="section-title"><span class="emoji">⚠️</span>主要弱点</div>
+            <div class="tag-list">
+                <span class="tag-item">🔴 ${analysis.weaknesses[0]}</span>
+                <span class="tag-item">🟡 ${analysis.weaknesses[1]}</span>
+                <span class="tag-item">🟠 ${analysis.weaknesses[2]}</span>
+            </div>
+
+            <div class="answer-log">
+                <div class="log-title" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">📋 查看全部64题答案记录 — 点击展开</div>
+                <div class="log-content" style="display:none">${logHTML}</div>
+            </div>
+
+            <button class="btn-restart" onclick="restart()">🔄 重新测试</button>
+        `;
+    }
+
+    function restart() {
+        resultPage.style.display = 'none';
+        startPage.style.display = 'block';
+        state.answers.fill(null);
+        nameInput.value = '';
+        nameInput.placeholder = '你的名字或昵称';
+        nameInput.style.borderColor = '';
+    }
+    </script>
+</body>
+</html>
