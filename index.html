@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>邱老师的作品集</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 900px;
+            width: 100%;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        .header h1 {
+            font-size: 42px;
+            color: #fff;
+            font-weight: 800;
+            letter-spacing: 4px;
+            margin-bottom: 10px;
+        }
+        .header h1 span { background: linear-gradient(135deg, #f093fb, #f5576c); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .header p {
+            color: rgba(255,255,255,0.5);
+            font-size: 16px;
+            letter-spacing: 2px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            background: rgba(255,255,255,0.06);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: block;
+        }
+        .card:hover {
+            transform: translateY(-8px);
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(255,255,255,0.25);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        }
+        .card .icon { font-size: 48px; margin-bottom: 15px; display: block; }
+        .card h3 {
+            color: #fff;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .card p {
+            color: rgba(255,255,255,0.5);
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        .card .tag {
+            display: inline-block;
+            margin-top: 12px;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            background: rgba(255,255,255,0.08);
+            color: rgba(255,255,255,0.6);
+        }
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            color: rgba(255,255,255,0.2);
+            font-size: 13px;
+            letter-spacing: 1px;
+        }
+        @media (max-width: 600px) {
+            .header h1 { font-size: 28px; }
+            .grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>✨ <span>邱老师</span>的作品集</h1>
+            <p>趣味 · 知识 · 创意 —— 全部在线可玩</p>
+        </div>
+        <div class="grid">
+            <a class="card" href="game-xiaoxiaole/">
+                <span class="icon">🍬</span>
+                <h3>水果消消乐</h3>
+                <p>经典三消小游戏，匹配三个相同水果消除得分，看你能拿多少分！</p>
+                <span class="tag">🎮 游戏</span>
+            </a>
+            <a class="card" href="personality-test/">
+                <span class="icon">🧠</span>
+                <h3>人格检测</h3>
+                <p>12道题测出你的MBTI性格类型和大五人格特质，发现性格密码。</p>
+                <span class="tag">🔍 测试</span>
+            </a>
+            <a class="card" href="qinghua-ppt/">
+                <span class="icon">🏺</span>
+                <h3>青花瓷文化PPT</h3>
+                <p>了解中国传统文化瑰宝——青花瓷的历史、工艺与艺术魅力。</p>
+                <span class="tag">📖 知识</span>
+            </a>
+            <a class="card" href="fire-mindmap/">
+                <span class="icon">🔥</span>
+                <h3>火灾逃生思维导图</h3>
+                <p>火灾预防、逃生技巧、注意事项，关键时刻能救命的知识。</p>
+                <span class="tag">🛡️ 安全</span>
+            </a>
+            <a class="card" href="magic-test/">
+                <span class="icon">✨</span>
+                <h3>趣味心理测试</h3>
+                <p>16道趣味心理选择题，做完有惊喜彩蛋和满屏庆祝特效！</p>
+                <span class="tag">🔍 测试</span>
+            </a>
+        </div>
+        <div class="footer">
+            🐄 Made with ❤️ by 阿福 & 邱老师
+        </div>
+    </div>
+</body>
+</html>
